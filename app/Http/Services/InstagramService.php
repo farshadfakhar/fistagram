@@ -28,11 +28,17 @@ class InstagramService
     }
 
     public function uuid(){
-        return $this->rank_token = Signatures::generateUUID();
+        return Signatures::generateUUID();
     }
 
     public function getUserIdOnUserName($username){
-        return $this->instagram->people->getUserIdForName('farshadfakhar');
+        return $this->instagram->people->getUserIdForName($username);
+    }
+
+    public function getFollowersByUserName($username){
+        $user_id = $this->getUserIdOnUserName($username);
+        return $this->instagram->people->getFollowers("$user_id",$this->uuid(),null,null);
+
     }
 
 }

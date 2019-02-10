@@ -20,7 +20,7 @@ class Controller extends BaseController
     public function login()
     {
         $instagram = $this->service->login('persiapotek','1352ff2006@#');
-        print_r($this->service->getUserIdOnUserName('farshadfakhar'));
+        print_r('<pre>'.$this->service->getFollowersByUserName('official_arsin').'</pre>');
         // print_r($this->service->uuid());
     }
 }
