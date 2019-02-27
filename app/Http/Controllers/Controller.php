@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use InstagramAPI\Instagram;
 use InstagramAPI\Signatures;
+use App\User;
+use App\Queue;
 
 use App\Http\Services\InstagramService;
 
@@ -19,8 +21,32 @@ class Controller extends BaseController
 
     public function login()
     {
-        $instagram = $this->service->login('persiapotek','1352ff2006@#');
-        print_r('<pre>'.$this->service->getFollowersByUserName('official_arsin').'</pre>');
-        // print_r($this->service->uuid());
+        return User::all()->map(function($user){
+            $instagram = $this->service->login($user->insta_user,$user->insta_pass);
+            $queue = $user->queue->take(15)->get();
+            if(!$user->queue){
+                collect($this->service->getFollowersByUserName('slime_googooliiii'))->map(function($account) use($user){
+                    $queue = new Queue();
+                    $queue->user_id = $user->id;
+                    $queue->queue = $account->getPk();
+                    $queue->save();
+                });
+            }else{
+                return collect($queue)->map(function($q){
+                    $this->service->followByPK($q->queue);
+                    $q->delete();
+                });
+            }
+            // $this->service->getFollowersByUserName('slime_googooliiii');
+        });
+        $instagram = $this->service->login('b2wall.com1','1352ff2006@#');
+        // return $users = $this->service->getFollowersByUserName('official_arsin')->users;
+        // print_r('<pre>'.$this->service->getAccounts().'</pre>');
+        return $accounts = $this->service->getAccounts();
+        $users_to_follow [] = collect($accounts)->map(function($item){
+            return $all = array_flatten($this->service->getFollowersByUserName($item->crawlAccount->username)->getUsers());
+        });
+        // return $users_to_follow;
+        return $users_to_follow;
     }
 }

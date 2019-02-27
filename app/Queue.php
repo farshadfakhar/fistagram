@@ -2,9 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class CrawlAccount extends Model {
-
-    protected $table= "crawlaccounts";
+class Queue extends Model {
 
     protected $fillable = [];
 

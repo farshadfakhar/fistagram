@@ -1,6 +1,7 @@
 <?php namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model {
 
@@ -12,6 +13,11 @@ class Account extends Model {
         // Validation rules
     ];
 
-    // Relationships
+    public function crawlAccount(){
+        return $this->HasOne(CrawlAccount::class);
+    }
 
+    public function queue(){
+        return $this->HasOne(Queue::class);
+    }
 }

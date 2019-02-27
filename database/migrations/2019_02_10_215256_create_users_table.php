@@ -13,6 +13,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->nullable();
             $table->string('name')->nullable();
             $table->string('password');
+            $table->string('insta_user');
+            $table->string('insta_pass');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

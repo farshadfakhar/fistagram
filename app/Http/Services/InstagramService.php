@@ -4,6 +4,10 @@ namespace App\Http\Services;
 use InstagramAPI\Instagram;
 use InstagramAPI\Signatures;
 
+use App\Account as UserAccounts;
+use App\User;
+use App\CrawlAccount;
+
 
 class InstagramService
 {
@@ -23,7 +27,7 @@ class InstagramService
         try {
             return $loginResponse = $this->instagram->login($username, $password);
 		} catch (\Exception $e) {
-		    echo 'Something went wrong: '.$e->getMessage()."\n";
+		    echo 'Something went wrong: '.$e."\n";
 		}
     }
 
@@ -37,8 +41,16 @@ class InstagramService
 
     public function getFollowersByUserName($username){
         $user_id = $this->getUserIdOnUserName($username);
-        return $this->instagram->people->getFollowers("$user_id",$this->uuid(),null,null);
+        return $this->instagram->people->getFollowers("$user_id",$this->uuid(),null,null)->getUsers();
 
+    }
+
+    public function followByPK($user_id){
+        return $this->instagram->people->follow($user_id);
+    }
+
+    public function getAccounts(){
+        return UserAccounts::with(['crawlAccount'])->get();
     }
 
 }
