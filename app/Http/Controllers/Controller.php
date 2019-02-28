@@ -23,8 +23,8 @@ class Controller extends BaseController
     {
         return User::all()->map(function($user){
             $instagram = $this->service->login($user->insta_user,$user->insta_pass);
-            $queue = $user->queue->take(15)->get();
-            if(!$user->queue){
+            $queue = $user->queue->take(15);
+            if(!$queue){
                 collect($this->service->getFollowersByUserName('slime_googooliiii'))->map(function($account) use($user){
                     $queue = new Queue();
                     $queue->user_id = $user->id;
@@ -37,16 +37,15 @@ class Controller extends BaseController
                     $q->delete();
                 });
             }
-            // $this->service->getFollowersByUserName('slime_googooliiii');
         });
-        $instagram = $this->service->login('b2wall.com1','1352ff2006@#');
-        // return $users = $this->service->getFollowersByUserName('official_arsin')->users;
-        // print_r('<pre>'.$this->service->getAccounts().'</pre>');
-        return $accounts = $this->service->getAccounts();
-        $users_to_follow [] = collect($accounts)->map(function($item){
-            return $all = array_flatten($this->service->getFollowersByUserName($item->crawlAccount->username)->getUsers());
-        });
+        // $instagram = $this->service->login('b2wall.com1','1352ff2006@#');
+        // // return $users = $this->service->getFollowersByUserName('official_arsin')->users;
+        // // print_r('<pre>'.$this->service->getAccounts().'</pre>');
+        // return $accounts = $this->service->getAccounts();
+        // $users_to_follow [] = collect($accounts)->map(function($item){
+        //     return $all = array_flatten($this->service->getFollowersByUserName($item->crawlAccount->username)->getUsers());
+        // });
+        // // return $users_to_follow;
         // return $users_to_follow;
-        return $users_to_follow;
     }
 }

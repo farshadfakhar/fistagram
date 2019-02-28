@@ -31,6 +31,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     public function queue(){
-        return $this->hasOne(Queue::class);
+        return $this->hasMany(Queue::class);
     }
 }
