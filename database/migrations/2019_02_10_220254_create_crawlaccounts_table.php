@@ -10,11 +10,11 @@ class CreateCrawlaccountsTable extends Migration
     {
         Schema::create('crawlaccounts', function(Blueprint $table) {
             $table->increments('id');
-            $table->tinyInteger('account_id');
+            $table->tinyInteger('user_id');
             $table->string('username');
-            $table->boolean('active');
-            $table->string('next_page');
-            $table->boolean('error');
+            $table->boolean('active')->default(1);
+            $table->string('next_page')->nullable();
+            $table->boolean('error')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

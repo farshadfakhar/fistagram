@@ -6,7 +6,7 @@ class CrawlAccount extends Model {
 
     protected $table= "crawlaccounts";
 
-    protected $fillable = [];
+    protected $guarded = ['id'];
 
     protected $dates = [];
 

@@ -12,7 +12,8 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    
+    // protected $service;
+
 
     public function __construct(InstagramService $service)
     {
@@ -21,23 +22,26 @@ class Controller extends BaseController
 
     public function login()
     {
-        return User::all()->map(function($user){
-            $instagram = $this->service->login($user->insta_user,$user->insta_pass);
-            $queue = $user->queue->take(15);
-            if(!$queue){
-                collect($this->service->getFollowersByUserName('slime_googooliiii'))->map(function($account) use($user){
-                    $queue = new Queue();
-                    $queue->user_id = $user->id;
-                    $queue->queue = $account->getPk();
-                    $queue->save();
-                });
-            }else{
-                return collect($queue)->map(function($q){
-                    $this->service->followByPK($q->queue);
-                    $q->delete();
-                });
-            }
-        });
+        return $this->service->startBot();
+        // return User::all()->map(function($user){
+        //     $instagram = $this->service->login($user->insta_user,$user->insta_pass);
+        //     $queue = $user->queue->take(15);
+        //     if(!$queue){
+        //         collect($this->service->getFollowersByUserName('slime_googooliiii'))->map(function($account) use($user){
+        //             $queue = new Queue();
+        //             $queue->user_id = $user->id;
+        //             $queue->queue = $account->getPk();
+        //             $queue->save();
+        //         });
+        //     }else{
+        //         return collect($queue)->map(function($q){
+        //             $this->service->followByPK($q->queue);
+        //             $q->delete();
+        //         });
+        //     }
+        // });
+
+        // --------------
         // $instagram = $this->service->login('b2wall.com1','1352ff2006@#');
         // // return $users = $this->service->getFollowersByUserName('official_arsin')->users;
         // // print_r('<pre>'.$this->service->getAccounts().'</pre>');
