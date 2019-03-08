@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
+use App\Activity;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,6 +25,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('instagram:login')->everyTenMinutes();
+        $schedule->command('instagram:login')->everyMinute();
+        $schedule->call(function () {
+            $activity = new Activity();
+            $activity->account_id = 1;
+            $activity->activity = 'schedule';
+            $activity->details = "schedule runed";
+            $activity->state = 'succsess';
+            $activity->save();
+
+        })->everyMinute();
     }
 }
