@@ -38,11 +38,18 @@ class InstagramCommand extends Command
     public function handle()
     {
         $service = new InstagramService();
-        // $this->info($service->startBot());
         return User::all()->map(function ($user) use($service){
             $instagram = $service->login($user->insta_user, $user->insta_pass);
-            $queue = $service->checkAndFillQueue($user);
-            $this->info($service->followFromQueue($queue));
+            dd($service->sendDirectMessage('farshadfakhar','salam'));
+            // $this->info("User $user->insta_user with password $user->insta_pass logined in $instagram[status] way");
+            // if($instagram['status'] == 'error'){
+            //     return $this->info($instagram['error']);
+            // }
+            // else{
+            //     $queue = $service->checkAndFillQueue($user);
+            //     // $this->info("Going to follow $queue");
+            //     $this->info($service->followFromQueue($queue,$user));
+            // }
         });
     }
 }

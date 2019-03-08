@@ -15,6 +15,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('insta_user');
             $table->string('insta_pass');
+            $table->boolean('active')->default(0);
+            $table->boolean('insta_error')->default(0);
+            $table->dateTime('exp')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

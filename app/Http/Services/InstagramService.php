@@ -9,6 +9,7 @@ use App\Account as UserAccounts;
 use App\User;
 use App\CrawlAccount;
 use App\Queue;
+use App\Activity;
 
 
 class InstagramService
@@ -27,24 +28,42 @@ class InstagramService
     public function login($username, $password)
     {
         try {
-            return $loginResponse = $this->instagram->login($username, $password);
+            $loginResponse = $this->instagram->login($username, $password);
+            return $result = [
+                'status' => 'success',
+                'data'   => $loginResponse
+            ];
         } catch (\Exception $e) {
-            echo 'Something went wrong: ' . $e . "\n";
+            return  'Something went wrong: ' . $e . "\n";
+            return $result = [
+                'status' => 'error',
+                'error'   => $e->getMessage()
+            ];
         }
     }
     public function startBot()
     {
         return User::all()->map(function ($user) {
             $instagram = $this->login($user->insta_user, $user->insta_pass);
-            return $queue = $this->checkAndFillQueue($user);
-            return $this->followFromQueue($queue);
+            if($instagram['status'] == 'error') 
+                return $instagram['error'];
+            $queue = $this->checkAndFillQueue($user);
+            return $this->followFromQueue($queue,$user);
         });
     }
 
-    public function followFromQueue($queue)
+    public function followFromQueue($queue,$user)
     {
-        return collect($queue)->map(function ($q) {
+        return collect($queue)->map(function ($q)use($user) {
             $user_data = json_decode($q->queue);
+
+            $activity = new Activity();
+            $activity->account_id = $user->id;
+            $activity->activity = 'follow';
+            $activity->details = "$user_data->username followed for $user->insta_user";
+            $activity->state = 'succsess';
+            $activity->save();
+
             $this->followByPK($user_data->pk);
             $q->delete();
             return "User $user_data->username successfuly followed";
@@ -64,9 +83,11 @@ class InstagramService
     private function addToQueue(User $user)
     {
         $crawl_account = $user->crawlAccount;
-        if ($crawl_account == null)
-        return 'This Account do not have any crawl account.';
+        if ($crawl_account == null){
+            return 'This Account do not have any crawl account.';
+        }
         $get_followers = $this->getFollowersByUserName($user);
+
         return collect($get_followers)->map(function ($account) use ($user) {
             $queue = new Queue();
             $queue->user_id = $user->id;
@@ -89,7 +110,11 @@ class InstagramService
     {
         $acc = $user->crawlAccount;
         $user_id = $this->getUserIdOnUserName($acc->username);
-        $followers =  $this->instagram->people->getFollowers("$user_id", $this->uuid(), null, $acc->next_page);
+        try {
+            $followers =  $this->instagram->people->getFollowers("$user_id", $this->uuid(), null, $acc->next_page);
+        } catch (\Exeption $e) {
+            $acc->update(['error' => 1]);
+         }
         $acc->update(['next_page' => $followers->getNext_max_id()]);
         return $followers->getUsers();
     }
@@ -102,5 +127,13 @@ class InstagramService
     public function getAccounts()
     {
         return UserAccounts::with(['crawlAccount'])->get();
+    }
+
+    public function sendDirectMessage($recipient, $text)
+    {
+        $to = Array();
+        $to['users'][] = $this->getUserIdOnUserName($recipient);
+        // return $to;
+        return $this->instagram->direct->sendText($to,$text);
     }
 }
