@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('instagram:login')->everyMinute();
+        $schedule->command('instagram:login')->everyFifteenMinutes();
         $schedule->call(function () {
             $activity = new Activity();
             $activity->account_id = 1;
@@ -34,6 +34,6 @@ class Kernel extends ConsoleKernel
             $activity->state = 'succsess';
             $activity->save();
 
-        })->everyMinute();
+        })->everyFifteenMinutes();
     }
 }
