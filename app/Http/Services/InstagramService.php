@@ -22,7 +22,7 @@ class InstagramService
     {
         Instagram::$allowDangerousWebUsageAtMyOwnRisk = true;
         $this->instagram = new Instagram(false, false);
-        $this->instagram->setProxy('http://ir452013:750990@us.mybestport.com:443');
+        // $this->instagram->setProxy('http://ir452013:750990@us.mybestport.com:443');
     }
 
     public function login($username, $password)
@@ -34,7 +34,6 @@ class InstagramService
                 'data'   => $loginResponse
             ];
         } catch (\Exception $e) {
-            return  'Something went wrong: ' . $e . "\n";
             return $result = [
                 'status' => 'error',
                 'error'   => $e->getMessage()

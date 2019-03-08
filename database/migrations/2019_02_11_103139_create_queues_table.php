@@ -11,7 +11,7 @@ class CreateQueuesTable extends Migration
         Schema::create('queues', function(Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('user_id');
-            $table->json('queue')->nullable();
+            $table->longText('queue')->nullable();
             $table->timestamps();
         });
     }
