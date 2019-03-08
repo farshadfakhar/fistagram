@@ -9,6 +9,7 @@ use App\Queue;
 use App\Http\Services\InstagramService;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
+use App\Activity;
 
 class Controller extends BaseController
 {
@@ -22,7 +23,8 @@ class Controller extends BaseController
 
     public function login()
     {
-        return $this->service->startBot();
+        return Activity::all();
+        // return $this->service->startBot();
         // return User::all()->map(function($user){
         //     $instagram = $this->service->login($user->insta_user,$user->insta_pass);
         //     $queue = $user->queue->take(15);
