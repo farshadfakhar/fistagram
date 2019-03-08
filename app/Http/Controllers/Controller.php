@@ -23,7 +23,7 @@ class Controller extends BaseController
 
     public function login()
     {
-        return Activity::all();
+        return Activity::orderBy('created_at','desc')->get();
         // return $this->service->startBot();
         // return User::all()->map(function($user){
         //     $instagram = $this->service->login($user->insta_user,$user->insta_pass);
