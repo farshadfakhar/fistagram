@@ -24,8 +24,8 @@ class Controller extends BaseController
 
     public function login()
     {
-        Activity::whereDate('created_at',Carbon::today())->orderBy('created_at','desc')->get();
-        return view('table');
+        $activity = Activity::whereDate('created_at',Carbon::today())->orderBy('created_at','desc')->get();
+        return view('table')->compact('activity');
         // return $this->service->startBot();
         // return User::all()->map(function($user){
         //     $instagram = $this->service->login($user->insta_user,$user->insta_pass);
