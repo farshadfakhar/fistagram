@@ -10,6 +10,8 @@ use App\User;
 use App\CrawlAccount;
 use App\Queue;
 use App\Activity;
+use Illuminate\Support\Facades\Log;
+use App\Log as AppLog;
 
 
 class InstagramService
@@ -18,6 +20,8 @@ class InstagramService
     protected $rank_token;
     protected $instagram;
 
+    protected $insta_account;
+
     public function __construct()
     {
         Instagram::$allowDangerousWebUsageAtMyOwnRisk = true;
@@ -25,16 +29,21 @@ class InstagramService
         // $this->instagram->setProxy('http://ir452013:750990@us.mybestport.com:443');
     }
 
-    public function login($username, $password)
+    public function setUserAccount(User $user){
+        $this->insta_account = $user;
+    }
+
+    public function login()
     {
         try {
-            $loginResponse = $this->instagram->login($username, $password);
+            $loginResponse = $this->instagram->login($this->insta_account->insta_user, $this->insta_account->insta_pass);
             return $result = [
                 'status' => 'success',
                 'data'   => $loginResponse
             ];
         } catch (\Exception $e) {
-            User::where('insta_user',$username)->update(['insta_error' => 1]);
+            $this->log($e->getMessage(),'error');
+            $this->instagram->update(['insta_error' => 1]);
             return $result = [
                 'status' => 'error',
                 'error'   => $e->getMessage()
@@ -70,30 +79,32 @@ class InstagramService
         });
     }
 
-    public function checkAndFillQueue(User $user)
+    public function checkAndFillQueue()
     {
-        $queue = $user->queue->take(15);
+        $queue = $this->insta_account->queue->take(15);
         if (!$queue->count()) {
-            $this->addToQueue($user);
-            return $user->queue->take(15);
+            $this->addToQueue($this->insta_account);
+            return $this->insta_account->queue->take(15);
         }
         return $queue;
     }
 
     private function addToQueue(User $user)
     {
-        $crawl_account = $user->crawlAccount;
+        $crawl_account = $this->insta_account->crawlAccount;
         if ($crawl_account == null){
+            $this->log('This Account do not have any crawl account','error');
             return 'This Account do not have any crawl account.';
         }
         $get_followers = $this->getFollowersByUserName($user);
 
-        return collect($get_followers)->map(function ($account) use ($user) {
+        return collect($get_followers)->map(function ($account) {
             $queue = new Queue();
-            $queue->user_id = $user->id;
+            $queue->user_id = $this->insta_account->id;
             $queue->queue = $account;
             return $queue->save();
         });
+        $this->log('Queue filled','success');
     }
 
     public function uuid()
@@ -106,14 +117,15 @@ class InstagramService
         return $this->instagram->people->getUserIdForName($username);
     }
 
-    public function getFollowersByUserName(User $user)
+    public function getFollowersByUserName()
     {
-        $acc = $user->crawlAccount;
+        $acc = $this->insta_account->crawlAccount;
         $user_id = $this->getUserIdOnUserName($acc->username);
         try {
             $followers =  $this->instagram->people->getFollowers("$user_id", $this->uuid(), null, $acc->next_page);
         } catch (\Exeption $e) {
             $acc->update(['error' => 1]);
+            $this->log('Error on following','error');
          }
         $acc->update(['next_page' => $followers->getNext_max_id()]);
         return $followers->getUsers();
@@ -135,5 +147,13 @@ class InstagramService
         $to['users'][] = $this->getUserIdOnUserName($recipient);
         // return $to;
         return $this->instagram->direct->sendText($to,$text);
+    }
+
+    public function log($log,$type = null){
+        $log = new AppLog();
+        $log->user_id = $this->insta_account->id;
+        $log->type = $type;
+        $log->log = $log;
+        return $log->save();
     }
 }
