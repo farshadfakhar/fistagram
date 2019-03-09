@@ -38,7 +38,7 @@ class InstagramCommand extends Command
     public function handle()
     {
         $service = new InstagramService();
-        return User::all()->map(function ($user) use($service){
+        return User::where(['active' => 1,'insta_error' => 0])->map(function ($user) use($service){
             $instagram = $service->login($user->insta_user, $user->insta_pass);
             $this->info("User $user->insta_user with password $user->insta_pass logined in $instagram[status] way");
             if($instagram['status'] == 'error'){

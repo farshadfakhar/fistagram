@@ -34,6 +34,7 @@ class InstagramService
                 'data'   => $loginResponse
             ];
         } catch (\Exception $e) {
+            User::where('insta_user',$username)->update(['insta_error' => 1]);
             return $result = [
                 'status' => 'error',
                 'error'   => $e->getMessage()
