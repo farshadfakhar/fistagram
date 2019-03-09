@@ -10,6 +10,7 @@ use App\Http\Services\InstagramService;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 use App\Activity;
+use Illuminate\Support\Carbon;
 
 class Controller extends BaseController
 {
@@ -23,7 +24,7 @@ class Controller extends BaseController
 
     public function login()
     {
-        return Activity::orderBy('created_at','desc')->get();
+        return Activity::whereDate('created_at',Carbon::today())->orderBy('created_at','desc')->get();
         // return $this->service->startBot();
         // return User::all()->map(function($user){
         //     $instagram = $this->service->login($user->insta_user,$user->insta_pass);
