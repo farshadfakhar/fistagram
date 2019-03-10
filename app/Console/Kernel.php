@@ -34,6 +34,6 @@ class Kernel extends ConsoleKernel
             $activity->save();
 
         })->everyFifteenMinutes();
-        $schedule->command('instagram:login')->everyFifteenMinutes();
+        $schedule->command('instagram:login')->everyMinute();
     }
 }

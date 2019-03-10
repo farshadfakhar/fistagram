@@ -42,9 +42,12 @@ class InstagramCommand extends Command
             $this->info("Bot is going to login  $user->insta_user");
             // $instagram = $service->login($user->insta_user, $user->insta_pass);
             $service->setUserAccount($user);
+            $service->log("Bot Started",'start');
             $instagram = $service->login();
             if($instagram['status'] == 'error'){
-                return $this->info($instagram['error']);
+                $this->info("ERROOOOR");
+                $this->info($instagram['error']);
+                return false;
             }
             else{
                 $this->info("User $user->insta_user with password $user->insta_pass logined in $instagram[status] way");
