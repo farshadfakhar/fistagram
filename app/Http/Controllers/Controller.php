@@ -17,15 +17,15 @@ class Controller extends BaseController
     // protected $service;
 
 
-    public function __construct(InstagramService $service)
-    {
-        $this->service = $service;
-    }
+    // public function __construct(InstagramService $service)
+    // {
+    //     $this->service = $service;
+    // }
 
     public function login()
     {
-        $activity = Activity::whereDate('created_at',Carbon::today())->orderBy('created_at','desc')->get();
-        return view('table',compact('activity'));
+        return $activity = Activity::whereDate('created_at',Carbon::today())->orderBy('created_at','desc')->get();
+        return view('table',)->with;
         // return $this->service->startBot();
         // return User::all()->map(function($user){
         //     $instagram = $this->service->login($user->insta_user,$user->insta_pass);
