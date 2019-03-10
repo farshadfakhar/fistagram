@@ -71,7 +71,7 @@ class InstagramService
             $activity->details = "$user_data->username followed for $user->insta_user";
             $activity->state = 'succsess';
             $activity->save();
-
+            sleep(0.7);
             $this->followByPK($user_data->pk);
             $q->delete();
             return "User $user_data->username successfuly followed";
