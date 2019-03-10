@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use App\Http\Services\InstagramService;
 
 use App\User;
+use App\Log;
 
 class InstagramCommand extends Command
 {
@@ -39,10 +40,11 @@ class InstagramCommand extends Command
     {
         $service = new InstagramService();
         return User::where(['active' => 1,'insta_error' => 0])->get()->map(function ($user) use($service){
+            $service->setUserAccount($user);
+            $this->info($service->insert_log('BotStarted','start'));
+
             $this->info("Bot is going to login  $user->insta_user");
             // $instagram = $service->login($user->insta_user, $user->insta_pass);
-            $service->setUserAccount($user);
-            $service->log("Bot Started",'start');
             $instagram = $service->login();
             if($instagram['status'] == 'error'){
                 $this->info("ERROOOOR");

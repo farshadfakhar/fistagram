@@ -10,7 +10,7 @@ use App\User;
 use App\CrawlAccount;
 use App\Queue;
 use App\Activity;
-use App\Log as AppLog;
+use App\Log;
 
 
 class InstagramService
@@ -41,7 +41,7 @@ class InstagramService
                 'data'   => $loginResponse
             ];
         } catch (\Exception $e) {
-            $this->log($e->getMessage(),'error');
+            $this->insert_log($e->getMessage(),'error');
             $this->instagram->update(['insta_error' => 1]);
             return $result = [
                 'status' => 'error',
@@ -92,7 +92,7 @@ class InstagramService
     {
         $crawl_account = $this->insta_account->crawlAccount;
         if ($crawl_account == null){
-            $this->log('This Account do not have any crawl account','error');
+            $this->insert_log('This Account do not have any crawl account','error');
             return 'This Account do not have any crawl account.';
         }
         $get_followers = $this->getFollowersByUserName($user);
@@ -103,7 +103,7 @@ class InstagramService
             $queue->queue = $account;
             return $queue->save();
         });
-        $this->log('Queue filled','success');
+        $this->insert_log('Queue filled','success');
     }
 
     public function uuid()
@@ -124,7 +124,7 @@ class InstagramService
             $followers =  $this->instagram->people->getFollowers("$user_id", $this->uuid(), null, $acc->next_page);
         } catch (\Exeption $e) {
             $acc->update(['error' => 1]);
-            $this->log('Error on following','error');
+            $this->insert_log('Error on following','error');
          }
         $acc->update(['next_page' => $followers->getNext_max_id()]);
         return $followers->getUsers();
@@ -148,11 +148,11 @@ class InstagramService
         return $this->instagram->direct->sendText($to,$text);
     }
 
-    public function log($log,$type = null){
-        $log = new AppLog();
+    public function insert_log($loging = null,$type = null){
+        $log = new Log();
         $log->user_id = $this->insta_account->id;
         $log->type = $type;
-        $log->log = $log;
+        $log->log = $loging;
         return $log->save();
     }
 }
