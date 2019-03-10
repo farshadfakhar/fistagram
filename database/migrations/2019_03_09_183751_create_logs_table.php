@@ -12,7 +12,7 @@ class CreateLogsTable extends Migration
             $table->increments('id');
             $table->unsignedSmallInteger('user_id');
             $table->string('type')->nullable();
-            $table->bigInteger('log')->nullable();
+            $table->string('log')->nullable();
             $table->timestamps();
         });
     }

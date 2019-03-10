@@ -10,7 +10,6 @@ use App\User;
 use App\CrawlAccount;
 use App\Queue;
 use App\Activity;
-use Illuminate\Support\Facades\Log;
 use App\Log as AppLog;
 
 
