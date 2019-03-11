@@ -3,7 +3,7 @@
         <title>Instagram</title>
     </head>
     <body>
-        <div class="activity">
+        <div class="activity" style>
             <table>
                 <tr>
                     <td>ش ک</td>
