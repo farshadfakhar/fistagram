@@ -83,8 +83,14 @@ class InstagramService
         $users = $this->instagram->people->getSelfFollowing($this->uuid());
         $users = json_decode($users);
         $users = array_slice($users->users, 0, 50);
-        foreach($users as $user){
-            $res[] = $this->instagram->people->unfollow($user->pk);
+        foreach($users as $u){
+            $activity = new Activity();
+            $activity->account_id = $user->id;
+            $activity->activity = 'unfollow';
+            $activity->details = "$u->username followed for $user->insta_user";
+            $activity->state = 'succsess';
+            $activity->save();
+            $this->instagram->people->unfollow($u->pk);
             sleep(1);
         }
         return 'unfollowed :)';
@@ -100,7 +106,7 @@ class InstagramService
             $activity->details = "$user_data->username followed for $user->insta_user";
             $activity->state = 'succsess';
             $activity->save();
-            sleep(0.7);
+            sleep(1);
             $this->followByPK($user_data->pk);
             $q->delete();
             return "User $user_data->username successfuly followed";
