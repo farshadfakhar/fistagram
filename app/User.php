@@ -37,4 +37,19 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function crawlAccount(){
         return $this->hasOne(CrawlAccount::class);
     }
+
+    public function scopeFollowMode($query)
+    {
+        return $query->where('mode',1);
+    }
+
+    public function scopeUnFollowMode($query)
+    {
+        return $query->where('mode',2);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active',1)->where('insta_error', 0);
+    }
 }

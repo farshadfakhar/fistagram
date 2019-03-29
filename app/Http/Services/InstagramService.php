@@ -60,11 +60,40 @@ class InstagramService
         });
     }
 
+    public function proccessUserJob(User $user)
+    {
+        switch($user->mode){
+            case 1:
+                return $this->followModeJob($user);
+            case 2:
+                return $this->unFollowModeJob($user);
+            case 5:
+                return false;
+        }
+    }
+
+    public function followModeJob(User $user)
+    {
+        $queue = $this->checkAndFillQueue($user);
+        return $this->followFromQueue($queue,$user);
+    }
+
+    public function unFollowModeJob(User $user)
+    {
+        $users = $this->instagram->people->getSelfFollowing($this->uuid());
+        $users = json_decode($users);
+        $users = array_slice($users->users, 0, 50);
+        foreach($users as $user){
+            $res[] = $this->instagram->people->unfollow($user->pk);
+            sleep(1);
+        }
+        return 'unfollowed :)';
+    }
+
     public function followFromQueue($queue,$user)
     {
         return collect($queue)->map(function ($q)use($user) {
             $user_data = json_decode($q->queue);
-
             $activity = new Activity();
             $activity->account_id = $user->id;
             $activity->activity = 'follow';
@@ -155,4 +184,5 @@ class InstagramService
         $log->log = $loging;
         return $log->save();
     }
+    
 }

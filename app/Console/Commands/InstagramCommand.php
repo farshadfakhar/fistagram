@@ -52,9 +52,10 @@ class InstagramCommand extends Command
             }
             else{
                 $this->info("User $user->insta_user with password $user->insta_pass logined in $instagram[status] way");
-                $queue = $service->checkAndFillQueue($user);
-                // $this->info("Going to follow $queue");
-                $this->info($service->followFromQueue($queue,$user));
+                $this->info($service->proccessUserJob($user));
+                // $queue = $service->checkAndFillQueue($user);
+                // // $this->info("Going to follow $queue");
+                // $this->info($service->followFromQueue($queue,$user));
             }
         });
     }
